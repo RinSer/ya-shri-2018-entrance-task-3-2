@@ -101,4 +101,4 @@ module.exports = {
 
 // Execution
 var main = module.exports.processData;
-//console.log(main(data.getData()));
+console.log(main(data.getData()));
