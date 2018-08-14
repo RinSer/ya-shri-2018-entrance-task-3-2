@@ -8,8 +8,6 @@ module.exports = {
      * @param {*} initial 
      */
     processData: function(initial) {
-        const NIGHT_START = 21;
-        const DAY_START = 7;
         const MAX_POWER = initial.maxPower;
 
         let rates = initial.rates;
