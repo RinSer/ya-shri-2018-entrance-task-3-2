@@ -40,30 +40,16 @@ module.exports = {
                 return 1;
         });
         for (var device of anytimes) {
-            var period = null;
-            if (device.mode) {
-                if (device.mode === 'day')
-                    period = { from: DAY_START, to: NIGHT_START };
-                if (device.mode === 'night')
-                    period = { from: NIGHT_START, to: DAY_START };
-            }
-            var start, stop;
-            if (period) {
-                stop = period.to;
-                if (period.from < period.to) 
-                    start = period.from
-                else start = period.from - 24;
-            } else {
-                start = 0;
-                stop = 24;
-            }
+            var interval = helpers.findStartStop(device.mode);
+            var start = interval.from;
+            var stop = interval.to;
             // Находим субоптимальное решение, чтобы добавить
             // в расписание максимально возможное количетво устройств
             for (var h = start; h < stop; h++) {
-                if (period) {
+                if (device.mode) {
                     // Выводим информацию об устройстве, которое не получается
                     // включить в расписание, не нарушив ограничения по мощности
-                    if (h + device.duration > period.to) {
+                    if (h + device.duration > stop) {
                         console.log(`Не получается добавить в расписание устройство:`);
                         console.log(device);
                         /*console.log(`Текущее расписание:`);

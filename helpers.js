@@ -20,6 +20,34 @@ module.exports = {
     },
 
     /**
+     * Находит начало и конец времени работы
+     */
+    findStartStop: function(mode) {
+        const NIGHT_START = 21;
+        const DAY_START = 7;
+
+        var period = null;
+        if (mode) {
+            if (mode === 'day')
+                period = { from: DAY_START, to: NIGHT_START };
+            if (mode === 'night')
+                period = { from: NIGHT_START, to: DAY_START };
+        }
+        var start, stop;
+        if (period) {
+            stop = period.to;
+            if (period.from < period.to) 
+                start = period.from
+            else start = period.from - 24;
+        } else {
+            start = 0;
+            stop = 24;
+        }
+
+        return { from: start, to: stop };
+    },
+
+    /**
      * Минимизация стоимости электроэнергии для получившегося расписания
      * @param {*} schedule 
      * @param {*} devices 
@@ -27,27 +55,10 @@ module.exports = {
      * @param {*} maxPower 
      */
     optimizeSchedule: function(schedule, devices, rates, maxPower) {
-        const NIGHT_START = 21;
-        const DAY_START = 7;
-        
         for (var device of devices.filter(d => d.duration !== 24)) {
-            var period = null;
-            if (device.mode) {
-                if (device.mode === 'day')
-                    period = { from: DAY_START, to: NIGHT_START };
-                if (device.mode === 'night')
-                    period = { from: NIGHT_START, to: DAY_START };
-            }
-            var start, stop;
-            if (period) {
-                stop = period.to;
-                if (period.from < period.to) 
-                    start = period.from
-                else start = period.from - 24;
-            } else {
-                start = 0;
-                stop = 24;
-            }
+            var interval = module.exports.findStartStop(device.mode);
+            var start = interval.from;
+            var stop = interval.to;
             var scheduleHour;
             for (var s = start; s < stop; s++) {
                 var hour = s;
